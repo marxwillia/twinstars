@@ -47,19 +47,20 @@ def plot_apogee_spec(spec_dat, spec_head, err_dat=None, model_dat=None, title=No
     for i in range(num_split):
         plt.subplot(num_split,1,i+1)
         wave_split = split[i]
-        mask = wave_lambda < wave_split
         if i==0:
-            mask = wave_lambda < wave_split
+            mask = (wave_lambda < wave_split)&(spec_dat!=0)
         else:
-            mask = (wave_lambda < wave_split)&(wave_lambda > split[i-1])
+            mask = (wave_lambda < wave_split)&(wave_lambda > split[i-1])&(spec_dat!=0)
 
         plt.plot(wave_lambda[mask], spec_dat[mask], "k")
         if bestfit:
             plt.plot(wave_lambda[mask], model_dat[mask], "r")
         if showerr:
-            plt.plot(wave_lambda[mask], spec_dat[mask]+err_dat[mask], "k", alpha=.5)
-            plt.plot(wave_lambda[mask], spec_dat[mask]-err_dat[mask], "k", alpha=.5)
+            plt.plot(wave_lambda[mask], spec_dat[mask]+err_dat[mask], "k", alpha=.5, drawstyle='steps')
+            plt.plot(wave_lambda[mask], spec_dat[mask]-err_dat[mask], "k", alpha=.5, drawstyle='steps')
         plt.ylabel('Flux $[10^{-17}$ erg/cm$^{2}$/s/$\AA]$')
+        plt.xlim((np.min(wave_lambda[mask]),np.max(wave_lambda[mask])))
+        plt.ylim((0.8,1.05))
 
     plt.subplot(num_split,1,num_split)
     plt.xlabel('Wavelength '+'$[\AA]$')
